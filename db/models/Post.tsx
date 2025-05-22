@@ -14,4 +14,4 @@ const PostSchema = new mongoose.Schema({
   author: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 });
 
-export default mongoose.models.User || mongoose.model("Post", PostSchema);
+export default mongoose.models.Post || mongoose.model("Post", PostSchema);

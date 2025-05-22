@@ -1,7 +1,7 @@
 import type React from "react";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/sonner";
 import Navbar from "@/components/navbar";
 import { SessionProvider } from "next-auth/react";
 import "./globals.css";

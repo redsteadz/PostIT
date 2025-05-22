@@ -1,11 +1,11 @@
 // This is a mock data service that would be replaced with a real database
 
 interface BlogPost {
-  id: string
-  title: string
-  content: string
-  author: string
-  date: string
+  id: string;
+  title: string;
+  content: string;
+  author: string;
+  date: string;
 }
 
 // In-memory storage for blog posts
@@ -34,18 +34,19 @@ const blogPosts: BlogPost[] = [
     author: "Alex Johnson",
     date: "2023-06-02T09:15:00Z",
   },
-]
+];
 
 // Get all blog posts
 export async function getBlogPosts(): Promise<BlogPost[]> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
-  return [...blogPosts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  return [...blogPosts].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  );
 }
 
 // Get a single blog post by ID
 export async function getBlogPost(id: string): Promise<BlogPost | null> {
   // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300))
-  return blogPosts.find((post) => post.id === id) || null
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  return blogPosts.find((post) => post.id === id) || null;
 }

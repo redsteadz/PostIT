@@ -1,8 +1,8 @@
-import { getBlogPosts } from "@/lib/data";
+import { getPosts } from "@/lib/actions";
 import BlogBlock from "./blog-block";
 
 export async function BlogFeed() {
-  const posts = await getBlogPosts();
+  const { status = 0, posts } = await getPosts({ id: "", all: true });
 
   if (posts.length === 0) {
     return (
@@ -17,9 +17,9 @@ export async function BlogFeed() {
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {posts.map((post) => (
-        <BlogBlock key={post.id} post={post} />
-      ))}
+      {posts.map((post) => {
+        return <BlogBlock key={post.id} post={post} />;
+      })}
     </div>
   );
 }

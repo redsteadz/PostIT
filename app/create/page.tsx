@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { createBlogPost } from "@/lib/actions";
 import { MarkdownPreview } from "@/components/markdown-preview";
 
@@ -25,34 +25,27 @@ export default function CreateBlogPage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!title.trim() || !content.trim()) {
-      toast({
-        title: "Error",
-        description: "Please fill in all fields",
-        variant: "destructive",
-      });
+      toast.error("Please fill in all fields");
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      toast({
-        title: "Success!",
-        description: "Your blog post has been created",
+      await createBlogPost({
+        title,
+        content,
+        date: new Date().toISOString(),
       });
+
+      toast.success("Your blog post has been created");
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to create blog post",
-        variant: "destructive",
-      });
+      toast.error("Failed to create blog post");
     } finally {
       setIsSubmitting(false);
     }
