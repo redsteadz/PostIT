@@ -68,12 +68,14 @@ export async function getPosts(body: { id?: string; all?: boolean }) {
       }));
       return { status: 200, posts: serializedPosts };
     } else if (body.id) {
-      const post = await Post.findById(body.id);
+      const post = await Post.findById(body.id).populate("author");
       if (!post) return { error: "Post not found", status: 404 };
       const serializedPost = {
-        ...post,
-        _id: post._id.toString(),
+        title: post.title,
+        content: post.content,
+        id: post._id.toString(),
         date: post.date?.toString(),
+        author: post.author!.name,
       };
       return { status: 200, posts: serializedPost };
     } else {
