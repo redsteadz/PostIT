@@ -12,7 +12,7 @@ export default function LogIn() {
           size="lg"
           className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
         >
-          <button onClick={() => signOut()}>Sign Out</button>
+          <button onClick={() => signOut()}>Log Out</button>
         </Button>
       </>
     );
@@ -24,7 +24,7 @@ export default function LogIn() {
         size="lg"
         className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
       >
-        <button onClick={() => signIn("google")}>Sign in</button>
+        <button onClick={() => signIn("google")}>Log in</button>
       </Button>
     </>
   );

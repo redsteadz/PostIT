@@ -14,7 +14,8 @@ export default function Home() {
           This website encompasses my thoughts, ideas, and what i wanted to tell
           you over time. I am not a diary person. But missing{" "}
           <span className="italic">you</span> was so great that my mind used to
-          race
+          race. Login with{" "}
+          <span className="font-bold italic">k____@___.pk</span>
         </p>
         <div className="flex justify-center mt-8">
           <LogIn />

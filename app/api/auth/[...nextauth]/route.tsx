@@ -16,6 +16,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       return false;
     },
   },
+  pages: {
+    error: "/api/auth/error",
+  },
 });
 
 export const { GET, POST } = handlers;
