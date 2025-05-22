@@ -11,6 +11,23 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         (profile?.email && authorizedEmails.includes(profile.email)) ||
         (user.email && authorizedEmails.includes(user.email))
       ) {
+        // Add to database if not already
+        const url = process.env.NEXTAUTH_URL!;
+        const body = {
+          name: user.name,
+          email: user.email,
+        };
+
+        const resp = fetch(`${url}/api/user/create`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        })
+          .then((res) => res.json())
+          .catch((err) => console.log(err));
+
         return true;
       }
       return false;
