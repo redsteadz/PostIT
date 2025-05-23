@@ -5,7 +5,6 @@ import Link from "next/link";
 import { auth } from "./api/auth/[...nextauth]/route";
 
 export default async function Home() {
-  const session = await auth();
   return (
     <div className="space-y-8">
       <section className="py-12 space-y-4">
@@ -23,18 +22,7 @@ export default async function Home() {
           <LogIn />
         </div>
       </section>
-      {session ? (
-        <BlogFeed />
-      ) : (
-        <div>
-          {" "}
-          <p className="text-xl text-center text-muted-foreground max-w-2xl mx-auto">
-            <span className="italic underline-offset-1">
-              You must login to get the posts !{" "}
-            </span>
-          </p>
-        </div>
-      )}
+      <BlogFeed />
     </div>
   );
 }
