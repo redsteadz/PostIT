@@ -13,7 +13,7 @@ pinned_version = "5"
 [plugins.inputs]
 
 [build]
-publish = "/home/red/Documents/ProjectDict/hobbyist/.next"
+publish = "/home/red/Documents/ProjectDict/PostIT/.next"
 publishOrigin = "ui"
 commandOrigin = "ui"
 command = "pnpm run build"
