@@ -19,7 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { createBlogPost } from "@/lib/actions";
-import { MarkdownPreview } from "@/components/markdown-preview";
+import Markdown from "react-markdown";
 
 export default function CreateBlogPage() {
   const [title, setTitle] = useState("");
@@ -92,8 +92,10 @@ export default function CreateBlogPage() {
                   />
                 </TabsContent>
                 <TabsContent value="preview" className="mt-2">
-                  <div className="border rounded-md min-h-[300px] p-4 bg-background">
-                    <MarkdownPreview content={content} />
+                  <div className="mt-8 prose dark:prose-invert max-w-none">
+                    <div className="border rounded-md min-h-[300px] p-4 bg-background">
+                      <Markdown>{content}</Markdown>
+                    </div>
                   </div>
                 </TabsContent>
               </Tabs>

@@ -8,7 +8,7 @@ interface BlogPostData {
 }
 
 import dbConnect from "@/lib/mongoose";
-import Post from "@/db/models/Post";
+import Post, { PostType } from "@/db/models/Post";
 import User from "@/db/models/User";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../app/api/auth/[...nextauth]/route";
@@ -43,7 +43,10 @@ export async function createBlogPost(data: BlogPostData) {
   }
 }
 
-export async function getPosts(body: { id?: string; all?: boolean }) {
+export async function getPosts(body: {
+  id?: string;
+  all?: boolean;
+}): Promise<PostType[] | PostType | Object> {
   await dbConnect();
   const session = await auth();
 
@@ -62,7 +65,7 @@ export async function getPosts(body: { id?: string; all?: boolean }) {
       const serializedPosts = allPosts.map((post) => ({
         title: post.title,
         content: post.content,
-        id: post._id.toString(),
+        id: post._id!.toString(),
         date: post.date?.toString(),
         author: post.author!.name,
       }));

@@ -1,5 +1,5 @@
 import { getPosts } from "@/lib/actions";
-import { MarkdownPreview } from "@/components/markdown-preview";
+import Markdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -10,8 +10,9 @@ export default async function BlogPostPage({
 }: {
   params: { id: string };
 }) {
-  const { id } = await params;
+  const { id } = params;
   const { status, posts } = await getPosts({ id: id, all: false });
+
   // console.log(post);
   if (!posts) {
     notFound();
@@ -42,7 +43,7 @@ export default async function BlogPostPage({
       </div>
 
       <div className="mt-8 prose dark:prose-invert max-w-none">
-        <MarkdownPreview content={posts.content} />
+        <Markdown>{posts.content}</Markdown>
       </div>
     </article>
   );

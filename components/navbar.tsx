@@ -4,13 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
-import { useAuth } from "@/lib/auth-context";
-import { LogOut, PenSquare } from "lucide-react";
+import { PenSquare } from "lucide-react";
 import ProfileCard from "./profile-card";
+import LogIn from "./login-btn";
+import { useSession } from "next-auth/react";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { data: session } = useSession();
   const brand = "MSOS";
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -30,27 +31,42 @@ export default function Navbar() {
             >
               Home
             </Link>
-            <Link
-              href="/create"
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                pathname === "/create"
-                  ? "text-foreground"
-                  : "text-muted-foreground"
-              }`}
-            >
-              Create
-            </Link>
+            {session && (
+              <Link
+                href="/create"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  pathname === "/create"
+                    ? "text-foreground"
+                    : "text-muted-foreground"
+                }`}
+              >
+                Create
+              </Link>
+            )}
           </nav>
         </div>
         <div className="flex items-center gap-2">
           <ModeToggle />
-          <ProfileCard />
-          <Button asChild variant="outline" size="icon" className="md:hidden">
-            <Link href="/create">
-              <PenSquare className="h-5 w-5" />
-              <span className="sr-only">Create Post</span>
-            </Link>
-          </Button>
+          {session ? (
+            <div>
+              <ProfileCard />
+              <Button
+                asChild
+                variant="outline"
+                size="icon"
+                className="md:hidden"
+              >
+                <Link href="/create">
+                  <PenSquare className="h-5 w-5" />
+                  <span className="sr-only">Create Post</span>
+                </Link>
+              </Button>
+            </div>
+          ) : (
+            <div>
+              <LogIn />
+            </div>
+          )}
         </div>
       </div>
     </header>
