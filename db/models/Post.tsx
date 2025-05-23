@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 export interface PostType {
+  id?: String;
   title: String;
   content: String;
   date: Date;

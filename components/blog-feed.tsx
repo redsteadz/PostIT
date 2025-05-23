@@ -1,5 +1,7 @@
 import { getPosts } from "@/lib/actions";
 import BlogBlock from "./blog-block";
+import { PostType } from "@/db/models/Post";
+import { Key } from "react";
 
 export async function BlogFeed() {
   const { status = 0, posts } = await getPosts({ id: "", all: true });
@@ -17,8 +19,8 @@ export async function BlogFeed() {
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {posts.map((post) => {
-        return <BlogBlock key={post.id} post={post} />;
+      {posts.map((post: PostType) => {
+        return <BlogBlock key={post.id! as Key} post={post} />;
       })}
     </div>
   );
