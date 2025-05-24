@@ -61,7 +61,10 @@ export async function getPosts(body: {
 
   try {
     if (body.all == true) {
-      const allPosts = await Post.find().populate("author").lean();
+      const allPosts = await Post.find()
+        .sort({ date: -1 })
+        .populate("author")
+        .lean();
       const serializedPosts = allPosts.map((post) => ({
         title: post.title,
         content: post.content,
