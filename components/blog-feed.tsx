@@ -3,6 +3,7 @@ import BlogBlock from "./blog-block";
 import { PostType } from "@/db/models/Post";
 import { Key } from "react";
 import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { BlogFeedPaginate } from "./blog-paginate";
 
 export async function BlogFeed() {
   const { status = 0, posts } = await getPosts({ id: "", all: true });
@@ -33,11 +34,5 @@ export async function BlogFeed() {
     );
   }
 
-  return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {posts.map((post: PostType) => {
-        return <BlogBlock key={post.id! as Key} post={post} />;
-      })}
-    </div>
-  );
+  return <BlogFeedPaginate posts={posts} />;
 }

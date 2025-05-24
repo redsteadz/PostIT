@@ -3,8 +3,8 @@
 import type React from "react";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import remarkGfm from "remark-gfm";
 import {
   Card,
   CardContent,
@@ -94,7 +94,7 @@ export default function CreateBlogPage() {
                 <TabsContent value="preview" className="mt-2">
                   <div className="mt-8 prose dark:prose-invert max-w-none">
                     <div className="border rounded-md min-h-[300px] p-4 bg-background">
-                      <Markdown>{content}</Markdown>
+                      <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
                     </div>
                   </div>
                 </TabsContent>

@@ -10,7 +10,7 @@ export default async function BlogPostPage({
 }: {
   params: { id: string };
 }) {
-  const { id } = params;
+  const { id } =  await params;
   const { status, posts } = await getPosts({ id: id, all: false });
 
   // console.log(post);
