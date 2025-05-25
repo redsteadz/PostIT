@@ -10,12 +10,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { formatDate } from "@/lib/utils";
+import {
+  calculateReadingTime,
+  calculateWordCount,
+  formatDate,
+} from "@/lib/utils";
+import { PostType } from "@/db/models/Post";
+import { Key } from "react";
 
-export default function BlogBlock({ post }: { post: any }) {
+export default function BlogBlock({ post }: { post: PostType }) {
+  const totalWords = calculateWordCount(post.content.toString());
+  const readingTime = calculateReadingTime(totalWords);
   return (
     <Link
-      key={post.id}
+      key={post.id as Key}
       href={`/blog/${post.id}`}
       prefetch={true}
       className="group"
@@ -44,6 +52,10 @@ export default function BlogBlock({ post }: { post: any }) {
           >
             Read more
           </Badge>
+          <div>
+            <Badge variant={"outline"}>{readingTime} min</Badge>
+            <Badge variant={"outline"}>{totalWords} words</Badge>
+          </div>
         </CardFooter>
       </Card>
     </Link>

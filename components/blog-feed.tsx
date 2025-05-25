@@ -4,6 +4,7 @@ import { PostType } from "@/db/models/Post";
 import { Key } from "react";
 import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { BlogFeedPaginate } from "./blog-paginate";
+import { PostStats } from "./blog-stats";
 
 export async function BlogFeed() {
   const { status = 0, posts } = await getPosts({ id: "", all: true });
@@ -34,5 +35,10 @@ export async function BlogFeed() {
     );
   }
 
-  return <BlogFeedPaginate posts={posts} />;
+  return (
+    <>
+      <PostStats posts={posts} />
+      <BlogFeedPaginate posts={posts} />;
+    </>
+  );
 }

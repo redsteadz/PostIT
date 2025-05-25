@@ -5,7 +5,7 @@ export interface PostType {
   title: String;
   content: String;
   date: Date;
-  auther: String;
+  author: String;
 }
 
 const PostSchema = new mongoose.Schema({
