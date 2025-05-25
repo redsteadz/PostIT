@@ -5,6 +5,7 @@ import { Key } from "react";
 import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { BlogFeedPaginate } from "./blog-paginate";
 import { PostStats } from "./blog-stats";
+import CreateBlogButton from "./create-button";
 
 export async function BlogFeed() {
   const { status = 0, posts } = await getPosts({ id: "", all: true });
@@ -34,11 +35,11 @@ export async function BlogFeed() {
       </div>
     );
   }
-
   return (
     <>
       <PostStats posts={posts} />
       <BlogFeedPaginate posts={posts} />;
+      <CreateBlogButton />
     </>
   );
 }
