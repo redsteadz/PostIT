@@ -10,36 +10,40 @@ interface BlogPostData {
 import dbConnect from "@/lib/mongoose";
 import Post, { PostType } from "@/db/models/Post";
 import User from "@/db/models/User";
-import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../app/api/auth/[...nextauth]/route";
-import { Types } from "mongoose";
 
 export async function createBlogPost(data: BlogPostData) {
-  // In a real app, this would save to a database
-  // For now, we're just simulating success
-  console.log("Creating blog post:", data);
-
   await dbConnect();
+  const body = data;
   const session = await auth();
   if (!session || !session.user?.email) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    return { status: 401, error: "Unauthorized" };
   }
 
   try {
     const user = await User.findOne({ email: session.user.email });
     if (!user) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+      return { status: 401, error: "User not found" };
     }
 
     const post = await Post.create({
-      title: data.title,
-      content: data.content,
+      title: body.title,
+      content: body.content,
       author: user._id,
-      date: data.date,
+      date: body.date,
     });
-    return { success: true };
+    return {
+      status: 200,
+      post: {
+        _id: post._id.toString(),
+        title: body.title,
+        content: body.content,
+        author: body.author,
+        date: body.date,
+      },
+    };
   } catch (error) {
-    return { success: false };
+    return { status: 400 };
   }
 }
 

@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import remarkGfm from "remark-gfm";
 import {
@@ -20,11 +20,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { createBlogPost } from "@/lib/actions";
 import Markdown from "react-markdown";
+import { useRouter } from "next/navigation";
 
 export default function CreateBlogPage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    setContent(localStorage.getItem("content") ?? "");
+    setTitle(localStorage.getItem("title") ?? "");
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,16 +41,21 @@ export default function CreateBlogPage() {
       return;
     }
 
+    const loadingToast = toast.loading("Posting your post !");
     setIsSubmitting(true);
-
     try {
-      await createBlogPost({
+      const resp = await createBlogPost({
         title,
         content,
         date: new Date().toISOString(),
       });
-
+      localStorage.clear();
       toast.success("Your blog post has been created");
+      toast.dismiss(loadingToast);
+      if (resp.status === 200 && resp.post) {
+        // console.log(resp.post);
+        router.push("/blog/" + resp.post._id);
+      }
     } catch (error) {
       toast.error("Failed to create blog post");
     } finally {
@@ -69,7 +81,10 @@ export default function CreateBlogPage() {
                 id="title"
                 placeholder="Enter your blog title"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  localStorage.setItem("title", e.target.value);
+                  setTitle(e.target.value);
+                }}
                 required
               />
             </div>
@@ -87,7 +102,10 @@ export default function CreateBlogPage() {
                     placeholder="Write your blog content using markdown..."
                     className="min-h-[300px]"
                     value={content}
-                    onChange={(e) => setContent(e.target.value)}
+                    onChange={(e) => {
+                      localStorage.setItem("content", e.target.value);
+                      setContent(e.target.value);
+                    }}
                     required
                   />
                 </TabsContent>
