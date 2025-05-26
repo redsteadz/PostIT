@@ -37,14 +37,14 @@ export default function Navbar() {
             </Link>
             {session && (
               <Link
-                href="/create"
+                href="/nostalgia"
                 className={`text-sm font-medium transition-colors hover:text-primary ${
-                  pathname === "/create"
+                  pathname === "/nostalgia"
                     ? "text-foreground"
                     : "text-muted-foreground"
                 }`}
               >
-                Create
+                Nostalgia
               </Link>
             )}
           </nav>
