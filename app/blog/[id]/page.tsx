@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import BlogDetail from "@/components/blog-detail";
 
 export default async function BlogPostPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const { id } =  await params;
+  const { id } = await params;
   const { status, posts } = await getPosts({ id: id, all: false });
 
   // console.log(post);
@@ -26,25 +27,7 @@ export default async function BlogPostPage({
           Back to all posts
         </Link>
       </Button>
-
-      <div className="space-y-4">
-        <h1 className="text-4xl font-bold tracking-tight">{posts.title}</h1>
-        <div className="flex items-center text-sm text-muted-foreground">
-          <span>{posts.author}</span>
-          <span className="mx-2">•</span>
-          <time dateTime={posts.date}>
-            {new Date(posts.date).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </time>
-        </div>
-      </div>
-
-      <div className="mt-8 prose dark:prose-invert max-w-none">
-        <Markdown>{posts.content}</Markdown>
-      </div>
+      <BlogDetail posts={posts} />
     </article>
   );
 }

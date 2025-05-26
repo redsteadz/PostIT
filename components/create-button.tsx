@@ -24,12 +24,15 @@ import { toast } from "sonner"
 import { createBlogPost } from "@/lib/actions"
 import Markdown from "react-markdown"
 import { useRouter } from "next/navigation"
-import { FilePlus2 } from "lucide-react"
+import { FilePlus2, Loader2 } from "lucide-react"
+import { motion, AnimatePresence } from "motion/react"
 
 export default function CreateBlogButton() {
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState("write")
   const router = useRouter()
 
   useEffect(() => {
@@ -57,7 +60,7 @@ export default function CreateBlogButton() {
       toast.success("Your blog post has been created")
       toast.dismiss(loadingToast)
       if (resp.status === 200 && resp.post) {
-        // console.log(resp.post);
+        setIsOpen(false)
         router.push("/blog/" + resp.post._id)
       }
     } catch (error) {
@@ -68,82 +71,230 @@ export default function CreateBlogButton() {
   }
 
   return (
-    <div className="fixed bottom-6 right-4">
-      <Dialog>
+    <div className="fixed bottom-6 right-4 z-50">
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button size="icon" className="rounded-full bg-secondary hover:bg-secondary/80 w-12 h-12">
-            <FilePlus2 className="h-6 w-6" />
-          </Button>
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            animate={{
+              boxShadow: [
+                "0 0 0 0 rgba(168, 85, 247, 0.4)",
+                "0 0 0 10px rgba(168, 85, 247, 0)",
+                "0 0 0 0 rgba(168, 85, 247, 0)",
+              ],
+            }}
+            transition={{
+              boxShadow: {
+                duration: 2,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+              },
+            }}
+          >
+            <Button
+              size="icon"
+              className="rounded-full bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 w-12 h-12 shadow-lg"
+            >
+              <motion.div animate={{ rotate: isOpen ? 45 : 0 }} transition={{ duration: 0.2 }}>
+                <FilePlus2 className="h-6 w-6 text-white" />
+              </motion.div>
+            </Button>
+          </motion.div>
         </DialogTrigger>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Create New Blog Post</DialogTitle>
-            <DialogDescription>
-              Share your thoughts with the world. Use markdown to format your content.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
-                <Input
-                  id="title"
-                  placeholder="Enter your blog title"
-                  value={title}
-                  onChange={(e) => {
-                    localStorage.setItem("title", e.target.value)
-                    setTitle(e.target.value)
-                  }}
-                  required
-                />
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="content">Content</Label>
-                <Tabs defaultValue="write">
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="write">Write</TabsTrigger>
-                    <TabsTrigger value="preview">Preview</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="write" className="mt-2">
-                    <Textarea
-                      id="content"
-                      placeholder="Write your blog content using markdown..."
-                      className="min-h-[300px]"
-                      value={content}
-                      onChange={(e) => {
-                        localStorage.setItem("content", e.target.value)
-                        setContent(e.target.value)
-                      }}
-                      required
-                    />
-                  </TabsContent>
-                  <TabsContent value="preview" className="mt-2">
-                    <div className="prose dark:prose-invert max-w-none">
-                      <div className="border rounded-md min-h-[300px] p-4 bg-background overflow-y-auto">
-                        <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
-                      </div>
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </div>
-            </div>
-            <DialogFooter className="flex flex-col sm:flex-row gap-2">
-              <DialogClose asChild>
-                <Button variant="outline" type="button">
-                  Cancel
-                </Button>
-              </DialogClose>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600"
+        <AnimatePresence>
+          {isOpen && (
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="p-6 overflow-y-auto max-h-[90vh]"
               >
-                {isSubmitting ? "Publishing..." : "Publish Post"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
+                <DialogHeader>
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1, duration: 0.3 }}
+                  >
+                    <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-cyan-600 bg-clip-text text-transparent">
+                      Create New Blog Post
+                    </DialogTitle>
+                    <DialogDescription className="mt-2">
+                      Share your thoughts with the world. Use markdown to format your content.
+                    </DialogDescription>
+                  </motion.div>
+                </DialogHeader>
+
+                <motion.form
+                  onSubmit={handleSubmit}
+                  className="space-y-6 mt-6"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2, duration: 0.3 }}
+                >
+                  <motion.div
+                    className="space-y-2"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3, duration: 0.3 }}
+                  >
+                    <Label htmlFor="title" className="text-sm font-medium">
+                      Title
+                    </Label>
+                    <motion.div whileFocus={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
+                      <Input
+                        id="title"
+                        placeholder="Enter your blog title"
+                        value={title}
+                        onChange={(e) => {
+                          localStorage.setItem("title", e.target.value)
+                          setTitle(e.target.value)
+                        }}
+                        className="transition-all duration-200 focus:ring-2 focus:ring-purple-500/20"
+                        required
+                      />
+                    </motion.div>
+                  </motion.div>
+
+                  <motion.div
+                    className="space-y-2"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4, duration: 0.3 }}
+                  >
+                    <Label htmlFor="content" className="text-sm font-medium">
+                      Content
+                    </Label>
+                    <Tabs value={activeTab} onValueChange={setActiveTab}>
+                      <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger
+                          value="write"
+                          className="transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-cyan-500"
+                        >
+                          Write
+                        </TabsTrigger>
+                        <TabsTrigger
+                          value="preview"
+                          className="transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-cyan-500"
+                        >
+                          Preview
+                        </TabsTrigger>
+                      </TabsList>
+
+                      <AnimatePresence mode="wait">
+                        <TabsContent value="write" key="write" className="mt-2">
+                          {activeTab === "write" && (
+                            <motion.div
+                              key="write-tab"
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              <Textarea
+                                id="content"
+                                placeholder="Write your blog content using markdown..."
+                                className="min-h-[300px] transition-all duration-200 focus:ring-2 focus:ring-purple-500/20 resize-none"
+                                value={content}
+                                onChange={(e) => {
+                                  localStorage.setItem("content", e.target.value)
+                                  setContent(e.target.value)
+                                }}
+                                required
+                              />
+                            </motion.div>
+                          )}
+                        </TabsContent>
+
+                        <TabsContent value="preview" key="preview" className="mt-2">
+                          {activeTab === "preview" && (
+                            <motion.div
+                              key="preview-tab"
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              transition={{ duration: 0.2 }}
+                              className="prose dark:prose-invert max-w-none"
+                            >
+                              <div className="border rounded-md min-h-[300px] p-4 bg-background overflow-y-auto">
+                                {content ? (
+                                  <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
+                                ) : (
+                                  <p className="text-muted-foreground italic">Start writing to see the preview...</p>
+                                )}
+                              </div>
+                            </motion.div>
+                          )}
+                        </TabsContent>
+                      </AnimatePresence>
+                    </Tabs>
+                  </motion.div>
+
+                  <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-4">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5, duration: 0.3 }}
+                    >
+                      <DialogClose asChild>
+                        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                          <Button
+                            variant="outline"
+                            type="button"
+                            className="w-full sm:w-auto transition-all duration-200"
+                          >
+                            Cancel
+                          </Button>
+                        </motion.div>
+                      </DialogClose>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6, duration: 0.3 }}
+                      whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
+                      whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+                    >
+                      <Button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 transition-all duration-200 disabled:opacity-70"
+                      >
+                        <AnimatePresence mode="wait">
+                          {isSubmitting ? (
+                            <motion.div
+                              key="loading"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              className="flex items-center gap-2"
+                            >
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Publishing...
+                            </motion.div>
+                          ) : (
+                            <motion.span
+                              key="publish"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                            >
+                              Publish Post
+                            </motion.span>
+                          )}
+                        </AnimatePresence>
+                      </Button>
+                    </motion.div>
+                  </DialogFooter>
+                </motion.form>
+              </motion.div>
+            </DialogContent>
+          )}
+        </AnimatePresence>
       </Dialog>
     </div>
   )

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
-import { PenSquare } from "lucide-react";
+import { Clover, PenSquare } from "lucide-react";
 import ProfileCard from "./profile-card";
 import LogIn from "./login-btn";
 import { useSession } from "next-auth/react";
@@ -59,9 +59,9 @@ export default function Navbar() {
                 size="icon"
                 className="md:hidden"
               >
-                <Link href="/create">
-                  <PenSquare className="h-5 w-5" />
-                  <span className="sr-only">Create Post</span>
+                <Link href="/nostalgia">
+                  <Clover className="h-5 w-5" />
+                  <span className="sr-only">Nostalgic Vibes</span>
                 </Link>
               </Button>
               <ProfileCard />
