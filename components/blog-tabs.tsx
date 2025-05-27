@@ -26,7 +26,7 @@ export default function BlogTabs({
 
         const file = item.getAsFile();
         if (file) {
-          console.log(file);
+          // console.log(file);
           // const link = await uploadImage(file); // <-- Define this
           // insertAtCursor(`![](${link})`);
         }

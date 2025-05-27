@@ -88,7 +88,7 @@ export async function createBlogPost(data: PostType) {
 }
 
 type GetNotesResponse =
-  | { status: 200; notes: NoteType[] | NoteType }
+  | { status: 200; notes: NoteType[] }
   | { status: 400 | 401 | 404 | 500; error: string };
 
 export async function getNotes(body: {
@@ -137,7 +137,7 @@ export async function getNotes(body: {
         author: note.author?.name || "Unknown",
       };
 
-      return { status: 200, notes: serializedNote };
+      return { status: 200, notes: [serializedNote] };
     } else {
       return { error: "Invalid request", status: 400 };
     }

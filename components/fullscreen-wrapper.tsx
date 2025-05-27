@@ -50,7 +50,7 @@ export default function FullscreenWrapper({
             onClick={() => setIsFullscreen(false)}
           >
             <motion.div
-              className="overflow-auto"
+              className="max-h-full max-w-full overflow-auto"
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.8 }}
