@@ -6,12 +6,21 @@ import remarkGfm from "remark-gfm";
 export default function BlogPreview({ content }: { content: string }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: -10 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1, duration: 0.3 }}
-      className="prose max-w-none dark:prose-invert"
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.2 }}
+      className="prose dark:prose-invert max-w-none"
     >
-      <Markdown children={content} remarkPlugins={[remarkGfm]} />
+      <div className="border rounded-md min-h-[300px] p-4 bg-background overflow-y-auto">
+        {content ? (
+          <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
+        ) : (
+          <p className="text-muted-foreground italic">
+            Start writing to see the preview...
+          </p>
+        )}
+      </div>
     </motion.div>
   );
 }

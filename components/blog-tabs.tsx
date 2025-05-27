@@ -4,6 +4,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import BlogPreview from "./blog-preview";
 import { RefObject, useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
 interface BlogTabsProps {
   content: string;
@@ -34,40 +35,59 @@ export default function BlogTabs({
     }
   };
   return (
-    <Tabs value={tab} onValueChange={setTab} className="w-full">
-      <TabsList className="w-full grid grid-cols-2 mb-2">
-        <TabsTrigger
-          value="write"
-          className="transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-cyan-500"
-        >
-          Write
-        </TabsTrigger>
-        <TabsTrigger
-          value="preview"
-          className="transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-cyan-500"
-        >
-          Preview
-        </TabsTrigger>
-      </TabsList>
+    <motion.div
+      className="space-y-2"
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: 0.4, duration: 0.3 }}
+    >
+      <Tabs value={tab} onValueChange={setTab} className="w-full">
+        <TabsList className="w-full grid grid-cols-2 mb-2">
+          <TabsTrigger
+            value="write"
+            className="transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-cyan-500"
+          >
+            Write
+          </TabsTrigger>
+          <TabsTrigger
+            value="preview"
+            className="transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-cyan-500"
+          >
+            Preview
+          </TabsTrigger>
+        </TabsList>
 
-      <TabsContent value="write">
-        <Textarea
-          ref={textAreaRef}
-          value={content}
-          onChange={(e) => setContentAction(e.target.value)}
-          onPaste={handlePaste}
-          placeholder="Write your blog content in markdown..."
-          rows={12}
-          className="resize-none text-sm min-h-[300px] font-mono"
-          required
-        />
-      </TabsContent>
+        <AnimatePresence mode="wait">
+          <TabsContent value="write" key="write" className="mt-2">
+            {tab === "write" && (
+              <motion.div
+                key="write-tab"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Textarea
+                  ref={textAreaRef as any}
+                  id="content"
+                  placeholder="Write your blog content using markdown..."
+                  className="min-h-[300px] transition-all duration-200 focus:ring-2 focus:ring-purple-500/20 resize-none"
+                  value={content}
+                  onChange={(e) => {
+                    localStorage.setItem("content", e.target.value);
+                    setContentAction(e.target.value);
+                  }}
+                  required
+                />
+              </motion.div>
+            )}
+          </TabsContent>
 
-      <TabsContent value="preview">
-        <div className="rounded-md border p-4 min-h-[300px] bg-background">
-          <BlogPreview content={content} />
-        </div>
-      </TabsContent>
-    </Tabs>
+          <TabsContent value="preview" key="preview" className="mt-2">
+            {tab === "preview" && <BlogPreview content={content} />}
+          </TabsContent>
+        </AnimatePresence>
+      </Tabs>
+    </motion.div>
   );
 }

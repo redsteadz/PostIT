@@ -56,20 +56,34 @@ export default function BlogForm({
   };
 
   return (
-    <motion.form onSubmit={handleSubmit} className="space-y-6 mt-6">
-      <div className="space-y-2">
+    <motion.form
+      onSubmit={handleSubmit}
+      className="space-y-6 mt-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2, duration: 0.3 }}
+    >
+      <motion.div
+        className="space-y-2"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.3, duration: 0.3 }}
+      >
         <Label htmlFor="title">Title</Label>
-        <Input
-          id="title"
-          placeholder="Enter your blog title"
-          value={title}
-          onChange={(e) => {
-            setTitle(e.target.value);
-            localStorage.setItem("title", e.target.value);
-          }}
-          required
-        />
-      </div>
+        <motion.div whileFocus={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
+          <Input
+            id="title"
+            placeholder="Enter your blog title"
+            value={title}
+            onChange={(e) => {
+              localStorage.setItem("title", e.target.value);
+              setTitle(e.target.value);
+            }}
+            className="transition-all duration-200 focus:ring-2 focus:ring-purple-500/20"
+            required
+          />
+        </motion.div>
+      </motion.div>
 
       <BlogTabs
         content={content}
