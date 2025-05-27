@@ -38,7 +38,7 @@ export async function BlogFeed() {
   return (
     <>
       <PostStats posts={posts} />
-      <BlogFeedPaginate posts={posts} />;
+      <BlogFeedPaginate posts={posts} />
       <CreateBlogButton />
     </>
   );

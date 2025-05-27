@@ -1,11 +1,13 @@
 "use client";
 
 import * as React from "react";
-import Box from "@mui/material/Box";
+import FullscreenWrapper from "@/components/fullscreen-wrapper";
 import { Card } from "@/components/ui/card";
 import { styled } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 import Masonry from "@mui/lab/Masonry";
+import { motion } from "motion/react";
+import CreateNoteButton from "@/components/create-note-button";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "#fff",
@@ -70,15 +72,28 @@ const getRandomContent = () => {
       );
   }
 };
-
 export default function BasicMasonry() {
   return (
     <div className="px-2 sm:px-14">
       <Masonry columns={{ xs: 2, sm: 3 }} spacing={2}>
         {Array.from({ length: 20 }).map((_, index) => (
-          <Card key={index}>{getRandomContent()}</Card>
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              delay: index * 0.05,
+              duration: 0.4,
+              ease: "easeOut",
+            }}
+          >
+            <FullscreenWrapper>
+              <Card>{getRandomContent()}</Card>
+            </FullscreenWrapper>
+          </motion.div>
         ))}
       </Masonry>
+      <CreateNoteButton />
     </div>
   );
 }

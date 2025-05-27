@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "./app/api/auth/[...nextauth]/route";
 
-const protectedRoutes = ["/create", "/api/post", "/api/user", "/blog"];
+const protectedRoutes = ["/nostalgia", "/api/post", "/api/user", "/blog"];
 
 export default async function middleware(req: NextRequest) {
   const session = await auth();

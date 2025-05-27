@@ -4,15 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
-import { Clover, PenSquare } from "lucide-react";
+import { Clover } from "lucide-react";
 import ProfileCard from "./profile-card";
 import LogIn from "./login-btn";
 import { useSession } from "next-auth/react";
+import { Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const brand = "MSOS";
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
@@ -49,28 +52,52 @@ export default function Navbar() {
             )}
           </nav>
         </div>
+
         <div className="flex items-center gap-2">
           <ModeToggle />
-          {session ? (
-            <div className="flex items-center gap-2">
-              <Button
-                asChild
-                variant="outline"
-                size="icon"
-                className="md:hidden"
+          <AnimatePresence mode="wait" initial={false}>
+            {status === "loading" ? (
+              <motion.div
+                key="loading"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="flex items-center justify-center w-8 h-8"
               >
-                <Link href="/nostalgia">
-                  <Clover className="h-5 w-5" />
-                  <span className="sr-only">Nostalgic Vibes</span>
-                </Link>
-              </Button>
-              <ProfileCard />
-            </div>
-          ) : (
-            <div>
-              <LogIn />
-            </div>
-          )}
+                <Loader2 className="animate-spin w-5 h-5 text-muted-foreground" />
+              </motion.div>
+            ) : session ? (
+              <motion.div
+                key="logged-in"
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                className="flex items-center gap-2"
+              >
+                <Button
+                  asChild
+                  variant="outline"
+                  size="icon"
+                  className="md:hidden"
+                >
+                  <Link href="/nostalgia">
+                    <Clover className="h-5 w-5" />
+                    <span className="sr-only">Nostalgic Vibes</span>
+                  </Link>
+                </Button>
+                <ProfileCard />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="login"
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+              >
+                <LogIn />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </header>

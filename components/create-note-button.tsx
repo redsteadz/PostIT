@@ -3,17 +3,17 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DialogTrigger, Dialog } from "@/components/ui/dialog";
-import { FilePlus2 } from "lucide-react";
+import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
+import { NotebookPen } from "lucide-react";
 import { motion } from "motion/react";
-import BlogDialog from "./blog-dialog";
-
-export default function CreateBlogButton() {
+import NoteForm from "./note-form";
+export default function CreateNoteButton() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="fixed bottom-6 right-4 z-50">
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
+      <Drawer open={isOpen} onOpenChange={setIsOpen}>
+        <DrawerTrigger asChild>
           <motion.div
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
@@ -40,13 +40,13 @@ export default function CreateBlogButton() {
                 animate={{ rotate: isOpen ? 45 : 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <FilePlus2 className="h-6 w-6 text-white" />
+                <NotebookPen className="h-6 w-6 text-white" />
               </motion.div>
             </Button>
           </motion.div>
-        </DialogTrigger>
-        <BlogDialog isOpen={isOpen} setIsOpenAction={setIsOpen} />
-      </Dialog>
+        </DrawerTrigger>
+        <NoteForm setIsOpenAction={setIsOpen} />
+      </Drawer>
     </div>
   );
 }
