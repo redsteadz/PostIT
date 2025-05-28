@@ -95,8 +95,16 @@ export default function NotesPage({ notes }: NotesPageProps) {
             }}
           >
             <FullscreenWrapper>
-              <Card>
-                {" "}
+              <Card
+                className="overflow-auto"
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <NoteRenderer note={note} />
               </Card>
             </FullscreenWrapper>

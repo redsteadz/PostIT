@@ -1,3 +1,4 @@
+import Image from "next/image";
 import NoteMeta from "./note-meta";
 
 export default function ImageNote({
@@ -11,8 +12,12 @@ export default function ImageNote({
 }) {
   return (
     <div>
-      <img
+      <Image
         src={src}
+        quality={60}
+        loading="lazy"
+        width={400}
+        height={800}
         alt={description}
         style={{ width: "100%", borderRadius: 8 }}
       />

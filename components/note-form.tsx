@@ -26,6 +26,24 @@ import { motion, AnimatePresence } from "motion/react";
 import { createNote } from "@/lib/actions";
 import { Loader2 } from "lucide-react";
 
+enum ContentType {
+  Text = "txt",
+  Video = "vid",
+  Image = "img",
+  Audio = "audio",
+}
+
+const determineType = (src: string): ContentType => {
+  if (!src) return ContentType.Text;
+  if (/\.(mp4|mov|avi|mkv)$/i.test(src)) return ContentType.Video;
+  if (/\.(png|jpeg|jpg|gif|webp)$/i.test(src)) return ContentType.Image;
+  if (/\.(mp3|wav|ogg)$/i.test(src)) return ContentType.Text;
+  if (/youtube\.com|youtu\.be|instagram\.com|reddit\.com/i.test(src))
+    return ContentType.Video;
+  if (/spotify\.com/i.test(src)) return ContentType.Audio;
+  return ContentType.Text;
+};
+
 export default function NoteForm({
   setIsOpenAction,
 }: {
@@ -33,14 +51,11 @@ export default function NoteForm({
 }) {
   const [src, setSrc] = useState("");
   const [description, setDescription] = useState("");
-  const [type, setType] = useState<"txt" | "img" | "vid" | "audio">("txt");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     setSrc(localStorage.getItem("src") ?? "");
     setDescription(localStorage.getItem("description") ?? "");
-    setType((localStorage.getItem("type") as any) ?? "txt");
   }, []);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,6 +76,11 @@ export default function NoteForm({
     const loadingToast = toast.loading("Posting your note...");
     setIsSubmitting(true);
     try {
+      // txt -> src is empty
+      // video -> mp4, youtube, instagram, reddit
+      // image -> png, jpeg, jpg ... eg
+      // audio -> mp3, spotifya
+      const type = determineType(src);
       const resp = await createNote({
         src,
         description,
@@ -118,27 +138,6 @@ export default function NoteForm({
             }}
             required
           />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="type">Note Type</Label>
-          <Select
-            value={type}
-            onValueChange={(val) => {
-              setType(val as "txt" | "img" | "vid" | "audio");
-              localStorage.setItem("type", val);
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="txt">Text</SelectItem>
-              <SelectItem value="img">Image</SelectItem>
-              <SelectItem value="vid">Video</SelectItem>
-              <SelectItem value="audio">Audio</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
 
         <DrawerFooter className="flex flex-col sm:flex-row gap-3 pt-4">

@@ -17,10 +17,11 @@ export default function CreateNoteButton() {
           <motion.div
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
+            className="rounded-full"
             animate={{
               boxShadow: [
                 "0 0 0 0 rgba(168, 85, 247, 0.4)",
-                "0 0 0 10px rgba(168, 85, 247, 0)",
+                "0 0 0 20px rgba(168, 85, 247, 0)",
                 "0 0 0 0 rgba(168, 85, 247, 0)",
               ],
             }}
