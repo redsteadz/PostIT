@@ -11,6 +11,7 @@ import { useSession } from "next-auth/react";
 import { Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
+
 export default function Navbar() {
   const pathname = usePathname();
   const { data: session, status } = useSession();

@@ -6,6 +6,17 @@ import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { BlogFeedPaginate } from "./blog-paginate";
 import { PostStats } from "./blog-stats";
 import CreateBlogButton from "./create-button";
+import { Skeleton } from "./ui/skeleton";
+
+export function BlogSkeleton() {
+  return (
+    <div>
+      {Array.from({ length: 5 }).map((_, index) => (
+        <Skeleton key={index} className="h-36 w-full mb-4" />
+      ))}
+    </div>
+  );
+}
 
 export async function BlogFeed() {
   const { status = 0, posts } = await getPosts({ id: "", all: true });

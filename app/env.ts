@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
-    NEXTAUTH_URL: z.string().url(),
+    NEXTAUTH_URL: z.string(),
     PROD: z
       .string()
       .transform((val) => val === "true")
