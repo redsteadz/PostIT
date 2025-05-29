@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import Navbar from "@/components/navbar";
 import { SessionProvider } from "next-auth/react";
 import "./globals.css";
-import { FlickeringGrid } from "@/components/magicui/flickering-grid";
+import QueryProvider from "./query-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,13 +30,15 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <SessionProvider refetchOnWindowFocus={false}>
-            <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-              <Navbar />
-              <main className="container mx-auto py-6 px-4 md:px-6">
-                {children}
-              </main>
-              <Toaster />
-            </div>
+            <QueryProvider>
+              <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+                <Navbar />
+                <main className="container mx-auto py-6 px-4 md:px-6">
+                  {children}
+                </main>
+                <Toaster />
+              </div>
+            </QueryProvider>
           </SessionProvider>
         </ThemeProvider>
       </body>

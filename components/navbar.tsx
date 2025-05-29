@@ -42,6 +42,7 @@ export default function Navbar() {
             {session && (
               <Link
                 href="/nostalgia"
+                prefetch={true}
                 className={`text-sm font-medium transition-colors hover:text-primary ${
                   pathname === "/nostalgia"
                     ? "text-foreground"

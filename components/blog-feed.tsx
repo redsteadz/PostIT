@@ -1,8 +1,4 @@
 import { getPosts } from "@/lib/actions";
-import BlogBlock from "./blog-block";
-import { PostType } from "@/db/models/Post";
-import { Key } from "react";
-import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { BlogFeedPaginate } from "./blog-paginate";
 import { PostStats } from "./blog-stats";
 import CreateBlogButton from "./create-button";
@@ -19,11 +15,10 @@ export function BlogSkeleton() {
 }
 
 export async function BlogFeed() {
-  const { status = 0, posts } = await getPosts({ id: "", all: true });
+  const [postsData] = await Promise.all([getPosts({ id: "", all: true })]);
 
-  const session = await auth();
-
-  if (!session) {
+  // Unauthorized
+  if (postsData.status == 401) {
     return (
       <div>
         {" "}
@@ -35,7 +30,11 @@ export async function BlogFeed() {
       </div>
     );
   }
-
+  if (postsData.status != 200 || !Array.isArray(postsData.posts)) {
+    // Handle error
+    return <div>{postsData.error}</div>;
+  }
+  const posts = postsData.posts!;
   if (!posts || posts.length === 0) {
     return (
       <div className="text-center py-12">

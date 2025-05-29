@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   DrawerClose,
   DrawerContent,
@@ -14,18 +13,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
+
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 import { createNote } from "@/lib/actions";
-import { Loader2 } from "lucide-react";
-
+import { CloudUpload, Loader2 } from "lucide-react";
+import GIFDialog from "./gif-modal/gif-dialog";
 enum ContentType {
   Text = "txt",
   Video = "vid",
@@ -99,7 +92,6 @@ export default function NoteForm({
       setIsSubmitting(false);
     }
   };
-
   return (
     <DrawerContent className="flex justify-center items-center">
       <DrawerHeader>
@@ -107,9 +99,16 @@ export default function NoteForm({
       </DrawerHeader>
 
       <form onSubmit={handleSubmit} className="space-y-6 px-4 mt-2 ">
-        <div className="space-y-2">
-          <Label htmlFor="src">Upload file</Label>
-          <Input id="file" type="file" onChange={handleFileUpload} />
+        <div className="flex justify-evenly items-center">
+          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              size="icon"
+              className="bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 w-16 h-12 shadow-lg text-xl font-bold"
+            >
+              <CloudUpload className="!w-6 !h-6" />
+            </Button>
+          </motion.div>
+          <GIFDialog setSrcAction={setSrc} />
         </div>
 
         <div className="space-y-2">

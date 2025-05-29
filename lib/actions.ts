@@ -1,12 +1,4 @@
 "use server";
-
-interface BlogPostData {
-  title: string;
-  content: string;
-  author?: string;
-  date: string;
-}
-
 import dbConnect from "@/lib/mongoose";
 import Post, { PostType } from "@/db/models/Post";
 import Note, { NoteType } from "@/db/models/Note";
@@ -149,7 +141,7 @@ export async function getNotes(body: {
 export async function getPosts(body: {
   id?: string;
   all?: boolean;
-}): Promise<PostType[] | PostType | Object> {
+}): Promise<{ status: number; posts?: PostType[] | PostType; error?: string }> {
   await dbConnect();
   const session = await auth();
 

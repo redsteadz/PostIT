@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  startTransition,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { useRouter } from "next/navigation";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -45,8 +51,10 @@ export default function BlogForm({
       toast.success("Your blog post has been created");
       toast.dismiss(loadingToast);
       if (resp.status === 200 && resp.post) {
-        setIsOpenAction(false);
-        router.push("/blog/" + resp.post._id);
+        startTransition(() => {
+          setIsOpenAction(false);
+          router.push("/blog/" + resp.post._id);
+        });
       }
     } catch {
       toast.error("Failed to create blog post");
