@@ -7,7 +7,14 @@ import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import { NotebookPen } from "lucide-react";
 import { motion } from "motion/react";
 import NoteForm from "./note-form";
-export default function CreateNoteButton() {
+
+export default function CreateNoteButton({
+  setOptimisticNotesAction,
+  setNotesAction,
+}: {
+  setOptimisticNotesAction: any;
+  setNotesAction: any;
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -46,7 +53,11 @@ export default function CreateNoteButton() {
             </Button>
           </motion.div>
         </DrawerTrigger>
-        <NoteForm setIsOpenAction={setIsOpen} />
+        <NoteForm
+          setIsOpenAction={setIsOpen}
+          setOptimisticNotesAction={setOptimisticNotesAction}
+          setNotesAction={setNotesAction}
+        />
       </Drawer>
     </div>
   );

@@ -19,6 +19,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { createNote } from "@/lib/actions";
 import { CloudUpload, Loader2 } from "lucide-react";
 import GIFDialog from "./gif-modal/gif-dialog";
+import { NoteType } from "@/db/models/Note";
 enum ContentType {
   Text = "txt",
   Video = "vid",
@@ -39,8 +40,12 @@ const determineType = (src: string): ContentType => {
 
 export default function NoteForm({
   setIsOpenAction,
+  setOptimisticNotesAction,
+  setNotesAction,
 }: {
   setIsOpenAction: (b: boolean) => void;
+  setOptimisticNotesAction: (opt: NoteType) => void;
+  setNotesAction: React.Dispatch<React.SetStateAction<NoteType[]>>;
 }) {
   const [src, setSrc] = useState("");
   const [description, setDescription] = useState("");
@@ -60,10 +65,10 @@ export default function NoteForm({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (formData: FormData) => {
     if (!src.trim() || !description.trim()) {
-      return toast.error("Please fill in all fields");
+      toast.error("Please fill in all fields");
+      return;
     }
 
     const loadingToast = toast.loading("Posting your note...");
@@ -74,6 +79,14 @@ export default function NoteForm({
       // image -> png, jpeg, jpg ... eg
       // audio -> mp3, spotifya
       const type = determineType(src);
+      const optNote: NoteType = {
+        id: crypto.randomUUID(),
+        src,
+        description,
+        type,
+        date: new Date().toISOString(),
+      };
+      setOptimisticNotesAction(optNote);
       const resp = await createNote({
         src,
         description,
@@ -85,6 +98,7 @@ export default function NoteForm({
       toast.dismiss(loadingToast);
       if (resp.status === 200 && resp.post) {
         setIsOpenAction(false);
+        setNotesAction((prev) => [resp.post, ...prev]);
       }
     } catch {
       toast.error("Failed to create note");
@@ -98,7 +112,7 @@ export default function NoteForm({
         <DrawerTitle>Create a New Note</DrawerTitle>
       </DrawerHeader>
 
-      <form onSubmit={handleSubmit} className="space-y-6 px-4 mt-2 ">
+      <form action={handleSubmit} className="space-y-6 px-4 mt-2 ">
         <div className="flex justify-evenly items-center">
           <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
             <Button

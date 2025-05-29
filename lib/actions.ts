@@ -30,7 +30,7 @@ export async function createNote(data: NoteType) {
     return {
       status: 200,
       post: {
-        _id: note._id.toString(),
+        id: note._id.toString(),
         src: body.src,
         type: body.type,
         description: body.description,

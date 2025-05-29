@@ -12,7 +12,7 @@ export default async function NostalgiaPage() {
   // console.log(resp.notes);
   return (
     <>
-      <NotesPage notes={resp.notes} />
+      <NotesPage notesInfo={resp.notes} />
     </>
   );
 }
