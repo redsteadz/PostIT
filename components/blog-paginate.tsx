@@ -1,84 +1,108 @@
-"use client"
-import BlogBlock from "./blog-block"
-import type { PostType } from "@/db/models/Post"
-import { useSession } from "next-auth/react"
+"use client";
+
+import BlogBlock from "./blog-block";
+import type { PostType } from "@/db/models/Post";
+import { useSession } from "next-auth/react";
 import {
   Pagination,
   PaginationContent,
   PaginationItem,
   PaginationPrevious,
   PaginationNext,
-} from "@/components/ui/pagination"
+} from "@/components/ui/pagination";
+import Fuse from "fuse.js";
+import { useEffect, useState, useMemo } from "react";
+import type { Key } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import SearchBar from "./search-bar";
 
-import { useEffect, useState } from "react"
-import type { Key } from "react"
-import { motion, AnimatePresence } from "motion/react"
-
-const POSTS_PER_PAGE = 6
+const POSTS_PER_PAGE = 6;
 
 export function BlogFeedPaginate({ posts }: { posts: PostType[] }) {
-  const { data: session } = useSession()
-  const [page, setPage] = useState(0)
-  const [current, setCurrent] = useState<PostType[]>([])
-  const [isTransitioning, setIsTransitioning] = useState(false)
-  const totalPages = Math.floor(posts.length / POSTS_PER_PAGE)
+  const { data: session } = useSession();
+  const [page, setPage] = useState(0);
+  const [current, setCurrent] = useState<PostType[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Memoized Fuse instance
+  const fuse = useMemo(() => {
+    return new Fuse(posts, {
+      keys: ["title", "content", "author.name"],
+      threshold: 0.3,
+    });
+  }, [posts]);
+
+  // Filtered posts depending on query
+  const filteredPosts = useMemo(() => {
+    if (!searchQuery.trim()) return posts;
+    return fuse.search(searchQuery).map((result) => result.item);
+  }, [searchQuery, fuse, posts]);
+
+  const totalPages = Math.floor((filteredPosts.length - 1) / POSTS_PER_PAGE);
 
   useEffect(() => {
-    setIsTransitioning(true)
-
+    setIsTransitioning(true);
     const timer = setTimeout(() => {
-      const newPosts: PostType[] = []
-      const start = page * POSTS_PER_PAGE
-      const end = Math.min((page + 1) * POSTS_PER_PAGE, posts.length)
+      const start = page * POSTS_PER_PAGE;
+      const end = Math.min((page + 1) * POSTS_PER_PAGE, filteredPosts.length);
+      setCurrent(filteredPosts.slice(start, end));
+      setIsTransitioning(false);
+    }, 150);
 
-      for (let i = start; i < end; i++) {
-        newPosts.push(posts[i])
-      }
-      setCurrent(newPosts)
-      setIsTransitioning(false)
-    }, 150)
-
-    return () => clearTimeout(timer)
-  }, [page, posts])
+    return () => clearTimeout(timer);
+  }, [page, filteredPosts]);
 
   const handlePrevious = () => {
-    if (page > 0) {
-      setPage((prev) => Math.max(0, prev - 1))
-    }
-  }
+    if (page > 0) setPage((prev) => prev - 1);
+  };
 
   const handleNext = () => {
-    if (page < totalPages) {
-      setPage((prev) => Math.min(totalPages, prev + 1))
-    }
-  }
+    if (page < totalPages) setPage((prev) => prev + 1);
+  };
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    setPage(0); // Reset page on new search
+  };
 
   if (!session) {
     return (
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <p className="text-xl text-center text-muted-foreground max-w-2xl mx-auto">
-          <span className="italic underline-offset-1">You must login to get the posts! </span>
-        </p>
-      </motion.div>
-    )
-  }
-
-  if (!posts || posts.length === 0) {
-    return (
       <motion.div
-        className="text-center py-12"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className="text-xl font-semibold mb-2">No blog posts yet</h2>
-        <p className="text-muted-foreground">Be the first to create a blog post!</p>
+        <p className="text-xl text-center text-muted-foreground max-w-2xl mx-auto">
+          <span className="italic underline-offset-1">
+            You must login to get the posts!
+          </span>
+        </p>
       </motion.div>
-    )
+    );
+  }
+
+  if (!filteredPosts || filteredPosts.length === 0) {
+    return (
+      <>
+        <SearchBar onSearchAction={handleSearchChange} />
+        <motion.div
+          className="text-center py-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h2 className="text-xl font-semibold mb-2">No matching posts</h2>
+          <p className="text-muted-foreground">Try a different keyword.</p>
+        </motion.div>
+      </>
+    );
   }
 
   return (
     <>
+      <SearchBar onSearchAction={handleSearchChange} />
+
       <div className="relative min-h-[400px]">
         <AnimatePresence mode="wait">
           {!isTransitioning && (
@@ -116,21 +140,18 @@ export function BlogFeedPaginate({ posts }: { posts: PostType[] }) {
             exit={{ opacity: 0 }}
           >
             <div className="flex space-x-2">
-              <motion.div
-                className="w-2 h-2 bg-primary rounded-full"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 0.6, repeat: Number.POSITIVE_INFINITY, delay: 0 }}
-              />
-              <motion.div
-                className="w-2 h-2 bg-primary rounded-full"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 0.6, repeat: Number.POSITIVE_INFINITY, delay: 0.2 }}
-              />
-              <motion.div
-                className="w-2 h-2 bg-primary rounded-full"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 0.6, repeat: Number.POSITIVE_INFINITY, delay: 0.4 }}
-              />
+              {Array.from({ length: 3 }).map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="w-2 h-2 bg-primary rounded-full"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{
+                    duration: 0.6,
+                    repeat: Infinity,
+                    delay: i * 0.2,
+                  }}
+                />
+              ))}
             </div>
           </motion.div>
         )}
@@ -152,7 +173,9 @@ export function BlogFeedPaginate({ posts }: { posts: PostType[] }) {
                 <PaginationPrevious
                   onClick={handlePrevious}
                   className={`transition-all duration-200 ${
-                    page === 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-accent"
+                    page === 0
+                      ? "opacity-50 cursor-not-allowed"
+                      : "cursor-pointer hover:bg-accent"
                   }`}
                 />
               </motion.div>
@@ -179,7 +202,9 @@ export function BlogFeedPaginate({ posts }: { posts: PostType[] }) {
                 <PaginationNext
                   onClick={handleNext}
                   className={`transition-all duration-200 ${
-                    page === totalPages ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-accent"
+                    page === totalPages
+                      ? "opacity-50 cursor-not-allowed"
+                      : "cursor-pointer hover:bg-accent"
                   }`}
                 />
               </motion.div>
@@ -188,5 +213,5 @@ export function BlogFeedPaginate({ posts }: { posts: PostType[] }) {
         </Pagination>
       </motion.div>
     </>
-  )
+  );
 }

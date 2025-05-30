@@ -3,12 +3,13 @@ import { BlogFeedPaginate } from "./blog-paginate";
 import { PostStats } from "./blog-stats";
 import CreateBlogButton from "./create-button";
 import { Skeleton } from "./ui/skeleton";
+import SearchBar from "./search-bar";
 
 export function BlogSkeleton() {
   return (
     <div>
       {Array.from({ length: 5 }).map((_, index) => (
-        <Skeleton key={index} className="h-36 w-full mb-4" />
+        <Skeleton key={index} className="h-12 w-full mb-4" />
       ))}
     </div>
   );
@@ -17,7 +18,6 @@ export function BlogSkeleton() {
 export async function BlogFeed() {
   const [postsData] = await Promise.all([getPosts({ id: "", all: true })]);
 
-  // Unauthorized
   if (postsData.status == 401) {
     return (
       <div>
@@ -31,7 +31,6 @@ export async function BlogFeed() {
     );
   }
   if (postsData.status != 200 || !Array.isArray(postsData.posts)) {
-    // Handle error
     return <div>{postsData.error}</div>;
   }
   const posts = postsData.posts!;
@@ -45,6 +44,7 @@ export async function BlogFeed() {
       </div>
     );
   }
+
   return (
     <>
       <PostStats posts={posts} />
