@@ -47,9 +47,19 @@ export default function VideoNote({
   date?: string;
 }) {
   if (src.includes("reel")) {
-    return <InstagramEmbed url={src} />;
+    return (
+      <div>
+        <InstagramEmbed url={src} />
+        <NoteMeta description={description} date={date} />
+      </div>
+    );
   } else if (src.includes("youtube")) {
-    return <YouTubeEmbed url={src} />;
+    return (
+      <div>
+        <YouTubeEmbed url={src} />
+        <NoteMeta description={description} date={date} />
+      </div>
+    );
   }
   return (
     <div>

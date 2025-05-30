@@ -45,7 +45,11 @@ export default function NoteForm({
   setNotesAction,
 }: {
   setIsOpenAction: React.Dispatch<React.SetStateAction<boolean>>;
-  setOptimisticNotesAction: (opt: NoteType) => void;
+  setOptimisticNotesAction: (
+    action:
+      | { type: "add"; note: NoteType & { opt?: boolean } }
+      | { type: "remove"; noteId: string },
+  ) => void;
   setNotesAction: React.Dispatch<React.SetStateAction<NoteType[]>>;
 }) {
   const [src, setSrc] = useState("");
@@ -81,7 +85,7 @@ export default function NoteForm({
       date: new Date().toISOString(),
       opt: true,
     };
-    setOptimisticNotesAction(optNote);
+    setOptimisticNotesAction({ type: "add", note: optNote });
 
     try {
       const resp = await createNote({

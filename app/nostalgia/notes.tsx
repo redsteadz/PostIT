@@ -1,10 +1,8 @@
 "use client";
 
-import FullscreenWrapper from "@/components/fullscreen-wrapper";
 import { Card } from "@/components/ui/card";
 import { AnimatePresence, motion } from "motion/react";
 import { NoteType } from "@/db/models/Note";
-import { Masonry } from "@mui/lab";
 import CreateNoteButton from "@/components/create-note-button";
 import NoteRenderer from "@/components/note/note-render";
 import { useOptimistic, useState } from "react";
@@ -12,13 +10,39 @@ import { useOptimistic, useState } from "react";
 interface NotesPageProps {
   notesInfo: NoteType[];
 }
+export type NoteAction =
+  | { type: "add"; note: NoteType }
+  | { type: "remove"; noteId: string };
 
 export default function NotesPage({ notesInfo }: NotesPageProps) {
   const [notes, setNotes] = useState<NoteType[]>(notesInfo);
   const [optimisticNotes, setOptimisticNotes] = useOptimistic(
     notes,
-    (state: NoteType[], newNote: NoteType) => [newNote, ...state],
+    (state: NoteType[], action: NoteAction) => {
+      switch (action.type) {
+        case "add":
+          return [action.note, ...state];
+        case "remove":
+          return state.filter((note) => note.id !== action.noteId);
+        default:
+          return state;
+      }
+    },
   );
+
+  if (optimisticNotes.length == 0) {
+    return (
+      <div className="h-auto text-muted-foreground italic">
+        <div className="text-center">
+          Wow! Such empty... maybe add something?
+        </div>
+        <CreateNoteButton
+          setOptimisticNotesAction={setOptimisticNotes}
+          setNotesAction={setNotes}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="px-2 sm:px-14">
@@ -33,11 +57,13 @@ export default function NotesPage({ notesInfo }: NotesPageProps) {
               transition={{ duration: 0.4, ease: "easeOut" }}
               layout
             >
-              <FullscreenWrapper>
-                <Card className="break-inside-avoid overflow-auto">
-                  <NoteRenderer note={note} />
-                </Card>
-              </FullscreenWrapper>
+              <Card className="break-inside-avoid overflow-auto">
+                <NoteRenderer
+                  setNotesAction={setNotes}
+                  note={note}
+                  setOptimisticNotesAction={setOptimisticNotes}
+                />
+              </Card>
             </motion.div>
           ))}
         </AnimatePresence>

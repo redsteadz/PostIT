@@ -5,6 +5,29 @@ import Note, { NoteType } from "@/db/models/Note";
 import User from "@/db/models/User";
 import { auth } from "../app/api/auth/[...nextauth]/route";
 
+export async function deleteNote(data: NoteType) {
+  await dbConnect();
+  const body = data;
+  const session = await auth();
+
+  if (!session || !session.user?.email) {
+    return { status: 401, error: "Unauthorized" };
+  }
+  // await new Promise((res) => setTimeout(res, 3000));
+  try {
+    const user = await User.findOne({ email: session.user.email });
+    if (!user) {
+      return { status: 401, error: "User not found" };
+    }
+    await Note.deleteOne({ _id: body.id! });
+    return {
+      status: 200,
+    };
+  } catch (error) {
+    return { status: 400 };
+  }
+}
+
 export async function createNote(data: NoteType) {
   await dbConnect();
   const body = data;
@@ -19,7 +42,6 @@ export async function createNote(data: NoteType) {
     if (!user) {
       return { status: 401, error: "User not found" };
     }
-    await new Promise((res) => setTimeout(res, 3000));
     const note = await Note.create({
       src: body.src,
       type: body.type,
