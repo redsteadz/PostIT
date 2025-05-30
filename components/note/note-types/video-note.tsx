@@ -4,7 +4,15 @@ import NoteMeta from "./note-meta";
 import Script from "next/script";
 
 const YouTubeEmbed = ({ url }: { url: string }) => {
-  url = url.replace("shorts", "embed");
+  // Grab the /{$ID} part from the url and place into
+  // https://youtube.com/embed/{$ID}
+  // The link can also be
+  // https://www.youtube.com/watch?v={$ID}
+  let id = url.split("/").pop();
+  if (id && id?.includes("watch?v=")) {
+    id = id.split("watch?v=").pop();
+  }
+  url = `https://youtube.com/embed/${id}`;
 
   return (
     <div className="aspect-w-16 aspect-h-9">
@@ -53,7 +61,7 @@ export default function VideoNote({
         <NoteMeta description={description} date={date} />
       </div>
     );
-  } else if (src.includes("youtube")) {
+  } else if (src.includes("youtube") || src.includes("youtu.be")) {
     return (
       <div>
         <YouTubeEmbed url={src} />
