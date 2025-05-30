@@ -2,6 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 
 interface FullscreenWrapperProps {
   children: React.ReactNode;
@@ -33,12 +39,20 @@ export default function FullscreenWrapper({
 
   return (
     <>
-      <div
-        className={`cursor-zoom-in ${className}`}
-        onClick={() => setIsFullscreen(true)}
-      >
-        {children}
-      </div>
+      <ContextMenu>
+        <ContextMenuTrigger>
+          <div
+            className={`cursor-zoom-in ${className}`}
+            onClick={() => setIsFullscreen(true)}
+          >
+            {children}
+          </div>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem>Delete</ContextMenuItem>
+          <ContextMenuItem>Edit</ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
 
       <AnimatePresence>
         {isFullscreen && (

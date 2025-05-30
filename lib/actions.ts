@@ -19,7 +19,7 @@ export async function createNote(data: NoteType) {
     if (!user) {
       return { status: 401, error: "User not found" };
     }
-
+    await new Promise((res) => setTimeout(res, 3000));
     const note = await Note.create({
       src: body.src,
       type: body.type,

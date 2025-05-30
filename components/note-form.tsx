@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { startTransition, useEffect, useState } from "react";
 import {
   DrawerClose,
   DrawerContent,
@@ -20,6 +20,7 @@ import { createNote } from "@/lib/actions";
 import { CloudUpload, Loader2 } from "lucide-react";
 import GIFDialog from "./gif-modal/gif-dialog";
 import { NoteType } from "@/db/models/Note";
+import { flushSync } from "react-dom";
 enum ContentType {
   Text = "txt",
   Video = "vid",
@@ -43,7 +44,7 @@ export default function NoteForm({
   setOptimisticNotesAction,
   setNotesAction,
 }: {
-  setIsOpenAction: (b: boolean) => void;
+  setIsOpenAction: React.Dispatch<React.SetStateAction<boolean>>;
   setOptimisticNotesAction: (opt: NoteType) => void;
   setNotesAction: React.Dispatch<React.SetStateAction<NoteType[]>>;
 }) {
@@ -64,41 +65,39 @@ export default function NoteForm({
       localStorage.setItem("src", fakeUrl);
     }
   };
-
+  const trySubmit = async () => {};
   const handleSubmit = async (formData: FormData) => {
     if (!src.trim() || !description.trim()) {
       toast.error("Please fill in all fields");
       return;
     }
-
-    const loadingToast = toast.loading("Posting your note...");
     setIsSubmitting(true);
+    const loadingToast = toast.loading("Posting your note...");
+    const type = determineType(src);
+    const optNote: NoteType & { opt?: boolean } = {
+      src,
+      description,
+      type,
+      date: new Date().toISOString(),
+      opt: true,
+    };
+    setOptimisticNotesAction(optNote);
+
     try {
-      // txt -> src is empty
-      // video -> mp4, youtube, instagram, reddit
-      // image -> png, jpeg, jpg ... eg
-      // audio -> mp3, spotifya
-      const type = determineType(src);
-      const optNote: NoteType = {
-        id: crypto.randomUUID(),
-        src,
-        description,
-        type,
-        date: new Date().toISOString(),
-      };
-      setOptimisticNotesAction(optNote);
       const resp = await createNote({
         src,
         description,
         type,
         date: new Date().toISOString(),
       });
-      localStorage.clear();
-      toast.success("Your note has been created");
-      toast.dismiss(loadingToast);
+
       if (resp.status === 200 && resp.post) {
-        setIsOpenAction(false);
-        setNotesAction((prev) => [resp.post, ...prev]);
+        startTransition(() => {
+          toast.success("Your note has been created");
+          toast.dismiss(loadingToast);
+          setNotesAction((prev) => [resp.post, ...prev]);
+          localStorage.clear();
+        });
       }
     } catch {
       toast.error("Failed to create note");
@@ -117,6 +116,7 @@ export default function NoteForm({
           <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
             <Button
               size="icon"
+              type="button"
               className="bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 w-16 h-12 shadow-lg text-xl font-bold"
             >
               <CloudUpload className="!w-6 !h-6" />
@@ -162,6 +162,7 @@ export default function NoteForm({
           <Button
             type="submit"
             disabled={isSubmitting}
+            onClick={() => setIsOpenAction(false)}
             className="bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 disabled:opacity-70"
           >
             <AnimatePresence mode="wait">

@@ -1,4 +1,4 @@
-import type { Config } from "tailwindcss"
+import type { Config } from "tailwindcss";
 
 const config = {
   darkMode: ["class"],
@@ -60,6 +60,17 @@ const config = {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        "infinite-glow": {
+          "0%": {
+            boxShadow: "0 0 0 0 rgba(168, 85, 247, 0.4)",
+          },
+          "50%": {
+            boxShadow: "0 0 0 20px rgba(168, 85, 247, 0)",
+          },
+          "100%": {
+            boxShadow: "0 0 0 0 rgba(168, 85, 247, 0)",
+          },
+        },
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
@@ -72,10 +83,11 @@ const config = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "infinite-glow": "infinite-glow 2s ease-in-out infinite",
       },
     },
   },
   plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
-} satisfies Config
+} satisfies Config;
 
-export default config
+export default config;

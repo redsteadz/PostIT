@@ -2,9 +2,9 @@
 
 import FullscreenWrapper from "@/components/fullscreen-wrapper";
 import { Card } from "@/components/ui/card";
-import Masonry from "@mui/lab/Masonry";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { NoteType } from "@/db/models/Note";
+import { Masonry } from "@mui/lab";
 import CreateNoteButton from "@/components/create-note-button";
 import NoteRenderer from "@/components/note/note-render";
 import { useOptimistic, useState } from "react";
@@ -19,37 +19,30 @@ export default function NotesPage({ notesInfo }: NotesPageProps) {
     notes,
     (state: NoteType[], newNote: NoteType) => [newNote, ...state],
   );
+
   return (
     <div className="px-2 sm:px-14">
-      <Masonry columns={{ xs: 2, sm: 3 }} spacing={2}>
-        {optimisticNotes.map((note, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              delay: index * 0.05,
-              duration: 0.4,
-              ease: "easeOut",
-            }}
-          >
-            <FullscreenWrapper>
-              <Card
-                className="overflow-auto"
-                style={{
-                  maxWidth: "100%",
-                  maxHeight: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <NoteRenderer note={note} />
-              </Card>
-            </FullscreenWrapper>
-          </motion.div>
-        ))}
-      </Masonry>
+      <div className="columns-2 md:columns-3 gap-4 space-y-4">
+        <AnimatePresence>
+          {optimisticNotes.map((note, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -30 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              layout
+            >
+              <FullscreenWrapper>
+                <Card className="break-inside-avoid overflow-auto">
+                  <NoteRenderer note={note} />
+                </Card>
+              </FullscreenWrapper>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
       <CreateNoteButton
         setOptimisticNotesAction={setOptimisticNotes}
         setNotesAction={setNotes}

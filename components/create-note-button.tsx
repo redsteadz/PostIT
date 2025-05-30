@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useOptimistic, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DialogTrigger, Dialog } from "@/components/ui/dialog";
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
@@ -16,10 +16,10 @@ export default function CreateNoteButton({
   setNotesAction: any;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-
+  const [optOpen, addOptOpen] = useOptimistic(isOpen);
   return (
     <div className="fixed bottom-6 right-4 z-50">
-      <Drawer open={isOpen} onOpenChange={setIsOpen}>
+      <Drawer open={optOpen} onOpenChange={setIsOpen}>
         <DrawerTrigger asChild>
           <motion.div
             whileHover={{ scale: 1.1 }}
