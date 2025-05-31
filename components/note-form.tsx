@@ -18,9 +18,11 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 import { createNote } from "@/lib/actions";
 import { CloudUpload, Loader2 } from "lucide-react";
+
 import GIFDialog from "./gif-modal/gif-dialog";
 import { NoteType } from "@/db/models/Note";
 import { flushSync } from "react-dom";
+import { UploadButton } from "./upload/upload";
 enum ContentType {
   Text = "txt",
   Video = "vid",
@@ -118,13 +120,19 @@ export default function NoteForm({
       <form action={handleSubmit} className="space-y-6 px-4 mt-2 ">
         <div className="flex justify-evenly items-center">
           <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              size="icon"
-              type="button"
-              className="bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 w-16 h-12 shadow-lg text-xl font-bold"
-            >
-              <CloudUpload className="!w-6 !h-6" />
-            </Button>
+            <UploadButton
+              endpoint="imageUploader"
+              onClientUploadComplete={(res) => {
+                // Do something with the response
+                setSrc(res[0].ufsUrl);
+                localStorage.setItem("src", res[0].ufsUrl);
+                alert("Upload Completed");
+              }}
+              onUploadError={(error: Error) => {
+                // Do something with the error.
+                alert(`ERROR! ${error.message}`);
+              }}
+            />
           </motion.div>
           <GIFDialog setSrcAction={setSrc} />
         </div>

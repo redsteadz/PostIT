@@ -17,6 +17,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           name: user.name,
           email: user.email,
         };
+        // console.log(user);
 
         const resp = fetch(`${url}/api/user/create`, {
           method: "POST",
