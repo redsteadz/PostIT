@@ -3,7 +3,8 @@ import { BlogFeedPaginate } from "./blog-paginate";
 import { PostStats } from "./blog-stats";
 import CreateBlogButton from "./create-button";
 import { Skeleton } from "./ui/skeleton";
-import SearchBar from "./search-bar";
+import { BlogPostsProvider } from "./blog-context";
+import BlogSearch from "./blog-search";
 
 export function BlogSkeleton() {
   return (
@@ -44,12 +45,14 @@ export async function BlogFeed() {
       </div>
     );
   }
-
   return (
     <>
-      <PostStats posts={posts} />
-      <BlogFeedPaginate posts={posts} />
-      <CreateBlogButton />
+      <BlogPostsProvider initialPosts={posts}>
+        <BlogSearch />
+        <PostStats />
+        <BlogFeedPaginate />
+        <CreateBlogButton />
+      </BlogPostsProvider>
     </>
   );
 }

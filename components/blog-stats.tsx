@@ -1,31 +1,22 @@
+"use client";
 import React from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   calculateWordCount,
   calculateCharCount,
   calculateReadingTime,
 } from "@/lib/utils";
-import { PostType } from "@/db/models/Post";
+import { useBlogPosts } from "./blog-context";
+import { AnimatedNumber } from "./animted-number";
 
-interface PostStatsProps {
-  posts: PostType[];
-}
-
-export const PostStats: React.FC<PostStatsProps> = ({ posts }) => {
-  const totalPosts = posts.length;
-  const totalWords = posts.reduce(
+export const PostStats = () => {
+  const { filteredPosts } = useBlogPosts();
+  const totalPosts = filteredPosts.length;
+  const totalWords = filteredPosts.reduce(
     (sum, post) => sum + calculateWordCount(post.content.toString()),
     0,
   );
-  const totalChars = posts.reduce(
+  const totalChars = filteredPosts.reduce(
     (sum, post) => sum + calculateCharCount(post.content.toString()),
     0,
   );
@@ -38,7 +29,9 @@ export const PostStats: React.FC<PostStatsProps> = ({ posts }) => {
           <CardTitle>Total Posts</CardTitle>
         </CardHeader>
         <CardContent>
-          <span className="text-3xl font-bold">{totalPosts}</span>
+          <span className="text-3xl font-bold">
+            <AnimatedNumber value={totalPosts} />
+          </span>
         </CardContent>
       </Card>
 
@@ -48,7 +41,7 @@ export const PostStats: React.FC<PostStatsProps> = ({ posts }) => {
         </CardHeader>
         <CardContent>
           <span className="text-3xl font-bold">
-            {totalWords.toLocaleString()}
+            <AnimatedNumber value={totalWords} />
           </span>
         </CardContent>
       </Card>
@@ -59,7 +52,7 @@ export const PostStats: React.FC<PostStatsProps> = ({ posts }) => {
         </CardHeader>
         <CardContent>
           <span className="text-3xl font-bold">
-            {totalChars.toLocaleString()}
+            <AnimatedNumber value={totalChars} />
           </span>
         </CardContent>
       </Card>
@@ -69,7 +62,11 @@ export const PostStats: React.FC<PostStatsProps> = ({ posts }) => {
           <CardTitle>Estimated Read Time</CardTitle>
         </CardHeader>
         <CardContent>
-          <span className="text-3xl font-bold">{totalReadingTime} min</span>
+          <span className="text-3xl font-bold">
+            {" "}
+            <AnimatedNumber value={totalReadingTime} />
+            min
+          </span>
         </CardContent>
       </Card>
     </div>

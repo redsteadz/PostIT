@@ -1,33 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
 type SearchBarProps = {
-  onSearchAction: (query: string, useSemantic: boolean) => void;
+  onSearchAction?: (query: string, useSemantic: boolean) => void;
+  setQueryAction: React.Dispatch<SetStateAction<string>>;
 };
 
-export default function SearchBar({ onSearchAction }: SearchBarProps) {
-  const [query, setQuery] = useState("");
+export default function SearchBar({
+  onSearchAction,
+  setQueryAction,
+}: SearchBarProps) {
   const [semantic, setSemantic] = useState(false);
-
-  const handleSearch = () => {
-    onSearchAction(query.trim(), semantic);
-  };
 
   return (
     <div className="flex flex-col gap-3 p-4 w-full max-w-xl mx-auto">
       <Input
         placeholder="Search blog posts..."
-        value={query}
         onChange={(e) => {
-          setQuery(e.target.value);
-          handleSearch();
+          // console.log("Setting input value:", e.target.value);
+          setQueryAction(e.target.value ?? "");
         }}
-        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
       />
 
       <div className="flex items-center justify-between">
@@ -39,7 +36,7 @@ export default function SearchBar({ onSearchAction }: SearchBarProps) {
           />
           <Label htmlFor="semantic-mode">Semantic Search</Label>
         </div>
-        <Button onClick={handleSearch}>Search</Button>
+        <Button>Search</Button>
       </div>
     </div>
   );

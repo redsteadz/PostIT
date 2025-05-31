@@ -10,34 +10,19 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "@/components/ui/pagination";
-import Fuse from "fuse.js";
 import { useEffect, useState, useMemo } from "react";
 import type { Key } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import SearchBar from "./search-bar";
+import { useBlogPosts } from "./blog-context";
 
 const POSTS_PER_PAGE = 6;
 
-export function BlogFeedPaginate({ posts }: { posts: PostType[] }) {
+export function BlogFeedPaginate() {
   const { data: session } = useSession();
   const [page, setPage] = useState(0);
-  const [current, setCurrent] = useState<PostType[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const { posts, filteredPosts } = useBlogPosts();
+  const [curPosts, setCurPosts] = useState(posts);
   const [isTransitioning, setIsTransitioning] = useState(false);
-
-  // Memoized Fuse instance
-  const fuse = useMemo(() => {
-    return new Fuse(posts, {
-      keys: ["title", "content", "author.name"],
-      threshold: 0.3,
-    });
-  }, [posts]);
-
-  // Filtered posts depending on query
-  const filteredPosts = useMemo(() => {
-    if (!searchQuery.trim()) return posts;
-    return fuse.search(searchQuery).map((result) => result.item);
-  }, [searchQuery, fuse, posts]);
 
   const totalPages = Math.floor((filteredPosts.length - 1) / POSTS_PER_PAGE);
 
@@ -46,9 +31,10 @@ export function BlogFeedPaginate({ posts }: { posts: PostType[] }) {
     const timer = setTimeout(() => {
       const start = page * POSTS_PER_PAGE;
       const end = Math.min((page + 1) * POSTS_PER_PAGE, filteredPosts.length);
-      setCurrent(filteredPosts.slice(start, end));
+      // console.log("Updating pagination");
+      setCurPosts(filteredPosts.slice(start, end));
       setIsTransitioning(false);
-    }, 150);
+    }, 200);
 
     return () => clearTimeout(timer);
   }, [page, filteredPosts]);
@@ -59,11 +45,6 @@ export function BlogFeedPaginate({ posts }: { posts: PostType[] }) {
 
   const handleNext = () => {
     if (page < totalPages) setPage((prev) => prev + 1);
-  };
-
-  const handleSearchChange = (query: string) => {
-    setSearchQuery(query);
-    setPage(0); // Reset page on new search
   };
 
   if (!session) {
@@ -85,7 +66,6 @@ export function BlogFeedPaginate({ posts }: { posts: PostType[] }) {
   if (!filteredPosts || filteredPosts.length === 0) {
     return (
       <>
-        <SearchBar onSearchAction={handleSearchChange} />
         <motion.div
           className="text-center py-12"
           initial={{ opacity: 0, y: 20 }}
@@ -101,8 +81,6 @@ export function BlogFeedPaginate({ posts }: { posts: PostType[] }) {
 
   return (
     <>
-      <SearchBar onSearchAction={handleSearchChange} />
-
       <div className="relative min-h-[400px]">
         <AnimatePresence mode="wait">
           {!isTransitioning && (
@@ -114,7 +92,7 @@ export function BlogFeedPaginate({ posts }: { posts: PostType[] }) {
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
             >
-              {current.map((post: PostType, index) => (
+              {curPosts.map((post: PostType, index) => (
                 <motion.div
                   key={post.id! as Key}
                   initial={{ opacity: 0, y: 20 }}
